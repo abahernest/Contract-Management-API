@@ -1,0 +1,94 @@
+service: contracts-management-api
+frameworkVersion: '3'
+
+custom:
+  dynamodb:
+    stages:
+      - dev
+    start:
+      docker: true
+      port: 8000
+      inMemory: false
+      heapInitial: 200m
+      heapMax: 1g
+      migrate: true
+      seed: true
+      cors: "*"
+      convertEmptyValues: true
+      noStart: true
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: eu-west-1
+  profile: default
+  stage: dev
+  environment:
+    # USERS_TABLE: 'usersTable'
+    JWT_SECRET: 'mysecretJwttoken'
+    DYNAMO_DB_URL: "http://localhost:8000"
+
+# The `functions` block defines what code to deploy
+functions:
+  signup:
+    handler: handler.signup
+    name: "${self.service}-${self.provider.stage}"
+    events:
+      - http:
+          path: signup
+          method: post
+          cors: true
+          
+  signin:
+    handler: handler.signin
+    name: "${self.service}-${self.provider.stage}"
+    events:
+      - http:
+          path: signin
+          method: post
+          cors: true
+
+  createContract:
+    handler: handler.newcontract
+    name: "${self.service}-${self.provider.stage}"
+    events:
+      - http:
+          path: createContract
+          method: post
+          cors: true
+
+  getContract:
+    handler: handler.singlecontract
+    name: "${self.service}-${self.provider.stage}"
+    events:
+      - http:
+          path: getContract
+          method: get
+          cors: true
+
+  allContracts:
+    handler: handler.allcontracts
+    name: "${self.service}-${self.provider.stage}"
+    events:
+      - http:
+          path: getContractIDs
+          method: get
+          cors: true
+
+# resources:
+#   Resources:
+#     UsersTable:
+#       Type: AWS::DynamoDB::Table
+#       Properties:
+#         AttributeDefinitions:
+#           - AttributeName: userId
+#             AttributeType: S
+#         KeySchema:
+#           - AttributeName: userId
+#             KeyType: HASH
+#         BillingMode: PAY_PER_REQUEST
+#         TableName: usersTable
