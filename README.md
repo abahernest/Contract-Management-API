@@ -14,6 +14,14 @@
 >> npm install
 ```
 3. In a new terminal, `cd` into the "dynamodb" folder and run `docker compose up`. (ensure docker is installed)
+4. Ensure serverless framework is installed globally. 
+```
+>> npm install -g serverless
+```
+If you're not logged in as admin user, use
+```
+>> sudo npm install -g serverless
+```
 4. Start Application
 ```
 >> sls offline start
